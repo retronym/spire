@@ -18,8 +18,14 @@ object MyBuild extends Build {
 
   // Dependencies
 
-  lazy val scalaTest = "org.scalatest" %% "scalatest" % "1.9.1"
-  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.10.0"
+  def scalaTest(scalaVersion: String) = {
+    val v = scalaVersion match {
+      case "2.11.0-M7" => "2.0.1-SNAP4"
+      case _ => "1.9.1"
+    }
+    "org.scalatest" %% "scalatest" % v
+  }
+  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.11.1"
 
   // Release step
 
@@ -50,7 +56,7 @@ object MyBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "org.spire-math",
 
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.10.3",
 
 
 
@@ -61,8 +67,8 @@ object MyBuild extends Build {
     homepage := Some(url("http://spire-math.org")),
 
     libraryDependencies ++= Seq(
-      scalaTest % "test",
-      "org.scala-lang" % "scala-reflect" % "2.10.2"
+      scalaTest(scalaVersion.value) % "test",
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value
     ),
 
     scalacOptions ++= Seq(
@@ -78,8 +84,10 @@ object MyBuild extends Build {
     ),
 
     resolvers += Resolver.sonatypeRepo("snapshots"),
-    addCompilerPlugin("org.scala-lang.plugins" % "macro-paradise_2.10.2" % "2.0.0-SNAPSHOT"),
-
+    libraryDependencies ++= (
+      if (scalaVersion.value.startsWith("2.11")) Nil
+      else compilerPlugin("org.scala-lang.plugins" %% "macro-paradise" % "2.0.0-SNAPSHOT" cross CrossVersion.full) :: Nil
+    ),
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
@@ -145,7 +153,7 @@ object MyBuild extends Build {
 
   lazy val macroSettings = Seq(
     name := "spire-macros",
-    libraryDependencies ++= Seq(scalaTest % "test", scalaCheck % "test")
+    libraryDependencies ++= Seq(scalaTest(scalaVersion.value) % "test", scalaCheck % "test")
   )
 
   // Core
@@ -184,7 +192,7 @@ object MyBuild extends Build {
   lazy val examplesSettings = Seq(
     name := "spire-examples",
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "1.2.3",
+      "com.chuusai" %% "shapeless" % "2.0.0-M1" cross CrossVersion.full,
       "org.apfloat" % "apfloat" % "1.6.3",
       "org.jscience" % "jscience" % "4.3.1"
     )
@@ -198,7 +206,7 @@ object MyBuild extends Build {
 
   lazy val scalacheckSettings = Seq(
     name := "spire-scalacheck-binding",
-    libraryDependencies ++= Seq(scalaTest, scalaCheck)
+    libraryDependencies ++= Seq(scalaTest(scalaVersion.value), scalaCheck)
   )
 
 
