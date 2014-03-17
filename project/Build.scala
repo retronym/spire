@@ -50,7 +50,7 @@ object MyBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "org.spire-math",
 
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.11.0-RC1",
 
     licenses := Seq("BSD-style" -> url("http://opensource.org/licenses/MIT")),
     homepage := Some(url("http://spire-math.org")),
@@ -193,7 +193,7 @@ object MyBuild extends Build {
   lazy val examplesSettings = Seq(
     name := "spire-examples",
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "1.2.3",
+      "com.chuusai" % "shapeless_2.11" % "1.2.4",
       "org.apfloat" % "apfloat" % "1.6.3",
       "org.jscience" % "jscience" % "4.3.1"
     )
